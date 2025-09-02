@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:calculator/data/notifiers.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 class CalcButtons extends StatelessWidget {
   const CalcButtons({super.key});
@@ -10,6 +11,20 @@ class CalcButtons extends StatelessWidget {
 
   void clearExpression() {
     equationNotifier.value = '';
+  }
+
+  void calculateResult() {
+    try {
+      String expression = equationNotifier.value
+          .replaceAll('x', '*')
+          .replaceAll('-', '-');
+      Expression exp = Parser().parse(expression);
+      ContextModel cm = ContextModel();
+      double eval = exp.evaluate(EvaluationType.REAL, cm);
+      equationNotifier.value = eval.toString();
+    } catch (e) {
+      equationNotifier.value = 'Error';
+    }
   }
 
   @override
@@ -41,14 +56,14 @@ class CalcButtons extends StatelessWidget {
       () => addToExpression('4'),
       () => addToExpression('5'),
       () => addToExpression('6'),
-      () => addToExpression('×'),
+      () => addToExpression('x'),
       () => addToExpression('1'),
       () => addToExpression('2'),
       () => addToExpression('3'),
-      () => addToExpression('−'),
+      () => addToExpression('-'),
       () => addToExpression('0'),
       () => addToExpression('.'),
-      () {},
+      () => calculateResult(),
       () => addToExpression('+'),
     ];
 
